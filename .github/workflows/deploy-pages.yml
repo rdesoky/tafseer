@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+# A merged pull request lands on master as a push, so this covers PR merges
+# as well as direct pushes and manual runs.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Allow one concurrent deployment, but never cancel a run that is already
+# publishing -- a half-finished deploy would leave the site in a bad state.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      # The site is plain static HTML served from the repository root, so the
+      # artifact is the checkout itself. .git and .github are always excluded
+      # by upload-pages-artifact.
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
