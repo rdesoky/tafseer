@@ -1,0 +1,56 @@
+/*
+ * Dark-mode support for tafseer pages, including when they are embedded in an
+ * iframe of a parent page that is running in dark mode.
+ *
+ * The active theme is driven by the `data-theme` attribute on <html>:
+ *   <html data-theme="dark">   force dark
+ *   <html data-theme="light">  force light (keeps each page's original styling)
+ *   no attribute               follow the OS/browser color scheme
+ * See tafseer-theme.js for how the attribute is set.
+ *
+ * Only dark mode overrides colors, so light mode renders exactly as before.
+ */
+:root {
+  --tafseer-dark-bg: #121212;
+  --tafseer-dark-fg: #e6e6e6;
+  --tafseer-dark-accent: #8ab4f8;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: var(--tafseer-dark-bg) !important;
+  color: var(--tafseer-dark-fg) !important;
+}
+
+/* Overrides the hard-coded <font color="#0000FF"> used by the tafsir pages. */
+html[data-theme="dark"] font,
+html[data-theme="dark"] a,
+html[data-theme="dark"] a:visited {
+  color: var(--tafseer-dark-accent) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+
+  html:not([data-theme="light"]),
+  html:not([data-theme="light"]) body {
+    background-color: var(--tafseer-dark-bg) !important;
+    color: var(--tafseer-dark-fg) !important;
+  }
+
+  html:not([data-theme="light"]) font,
+  html:not([data-theme="light"]) a,
+  html:not([data-theme="light"]) a:visited {
+    color: var(--tafseer-dark-accent) !important;
+  }
+}
